@@ -106,9 +106,15 @@
     <None Include="Data\GoogleSheets\client_secret.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Data\Local\Matchup.csv" />
-    <None Include="Data\Local\ScoreInformation.csv" />
-    <None Include="Data\Local\Team.csv" />
+    <None Include="Data\Local\Matchup.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Data\Local\ScoreInformation.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Data\Local\Team.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

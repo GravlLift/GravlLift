@@ -14,7 +14,7 @@ namespace FantasyFootball
 
     class Program
     {
-        const int SIMULATIONS = 10000;
+        const int SIMULATIONS = 3;
 
         static Data.IFantasyDataProvider provider = new Data.CsvDataProvider();
         static Schedule Schedule;
@@ -33,9 +33,19 @@ namespace FantasyFootball
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
+            List<string> allResults = new List<string>();
+
+            StringBuilder header = new StringBuilder(",");
+            for (int i = 1; i <= Schedule.Teams.Count; i++)
+            {
+                header.Append($"{i},");
+            }
+            allResults.Add(header.ToString());
+
             // Simulate seasons
             for (int i = 0; i < SIMULATIONS; i++)
             {
+                StringBuilder resultsStringBuilder = new StringBuilder($"{i + 1},");
                 //Console.WriteLine($"Simulating season {i + 1}...");
                 foreach (var team in Schedule.Teams)
                 {
@@ -71,9 +81,9 @@ namespace FantasyFootball
                     List<SeasonResult> tiedResults = rankedLastSeasonResults.Where(r => rankedLastSeasonResults.Any(r2 => r2.Team != r.Team && r2.Wins == r.Wins && r2.PointsFor == r.PointsFor)).ToList();
 
                     List<SeasonResult> headToHead = new List<SeasonResult>();
-                    foreach(var result in tiedResults)
+                    foreach (var result in tiedResults)
                     {
-                        foreach(var opposingTeam in tiedResults.Where(r => r.Team != result.Team).Select(r => r.Team))
+                        foreach (var opposingTeam in tiedResults.Where(r => r.Team != result.Team).Select(r => r.Team))
                         {
                             headToHead.Add(new SeasonResult(result.Team, result.GetMatchesVs(opposingTeam)));
                         }
@@ -81,7 +91,7 @@ namespace FantasyFootball
 
                     int placeIndex = tiedResults.Min(r => r.Placement);
 
-                    foreach(var teamResult in headToHead)
+                    foreach (var teamResult in headToHead)
                     {
                         tiedResults.First(r => r.Team == teamResult.Team).Placement = placeIndex;
                         placeIndex++;
@@ -89,10 +99,24 @@ namespace FantasyFootball
 
                     rankedLastSeasonResults.OrderBy(r => r.Placement);
                 }
+
+                foreach(var result in rankedLastSeasonResults)
+                {
+                    resultsStringBuilder.Append($"{result.Team} - {result.RecordString} - {result.PointsFor},");
+                }
+                allResults.Add(resultsStringBuilder.ToString());
             }
 
             Dictionary<Team, double> playoffOdds = new Dictionary<Team, double>();
-            List<string> lines = new List<string>();
+            List<string> summary = new List<string>();
+
+            header = new StringBuilder(",");
+            for (int i = 0; i <= 13; i++)
+            {
+                header.Append($"({i}-{13 - i}-0),");
+            }
+            summary.Add(header.ToString());
+
             foreach (var team in Schedule.Teams)
             {
                 IEnumerable<SeasonResult> teamResults = SeasonResults.Where(r => r.Key == team).SelectMany(r => r.Value);
@@ -101,17 +125,18 @@ namespace FantasyFootball
 
                 StringBuilder sb = new StringBuilder($"{team}");
 
-                for(int i = 0; i <= 13; i++)
+                for (int i = 0; i <= 13; i++)
                 {
                     sb.Append("," + ((double)teamResults.Count(sr => sr.Wins == i) / (double)teamResults.Count()).ToString("P"));
                 }
                 sb.Append("," + playoffOdds.Last().Value.ToString("P"));
-                lines.Add(sb.ToString());
+                summary.Add(sb.ToString());
             }
             stopwatch.Stop();
             Console.WriteLine(stopwatch.Elapsed);
 
-            File.WriteAllLines(Path.Combine(Utilities.Files.ProjectDirectory, @"Data\Output.csv"), lines.ToArray());
+            File.WriteAllLines(Path.Combine(Utilities.Files.ProjectDirectory, @"Data\Summary.csv"), summary.ToArray());
+            File.WriteAllLines(Path.Combine(Utilities.Files.ProjectDirectory, @"Data\Results.csv"), allResults.ToArray());
 
 
             Console.ReadKey();
@@ -121,6 +146,6 @@ namespace FantasyFootball
         {
             return new Result(team1Showing.Team, team1Showing.GetScore(), team2Showing.Team, team2Showing.GetScore());
         }
-        
+
     }
 }

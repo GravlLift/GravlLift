@@ -6,7 +6,7 @@ namespace FantasyFootball
     public class MatchupTeamInfo
     {
         static Random rnd = new Random();
-        static double STD_DEVIATION = 22.76937968;
+        static double STD_DEVIATION = 23.58967325;
 
         public Team Team;
         public double? ProjectedScore;

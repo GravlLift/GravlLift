@@ -71,5 +71,10 @@ namespace FantasyFootball
         {
             return Results.Where(r => (r.Team1 == Team && r.Team2 == opponent) || (r.Team2 == Team && r.Team1 == opponent));
         }
+
+        public override string ToString()
+        {
+            return $"{Team} - {RecordString}";
+        }
     }
 }
