@@ -111,7 +111,7 @@ namespace FantasyFootball
             stopwatch.Stop();
             Console.WriteLine(stopwatch.Elapsed);
 
-            File.WriteAllLines(Path.Combine(Utilities.Files.AssemblyDirectory, @"..\Data\Output.csv"), lines.ToArray());
+            File.WriteAllLines(Path.Combine(Utilities.Files.ProjectDirectory, @"Data\Output.csv"), lines.ToArray());
 
 
             Console.ReadKey();

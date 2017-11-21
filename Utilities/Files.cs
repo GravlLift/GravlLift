@@ -21,7 +21,7 @@ namespace Utilities
         {
             get
             {
-                return Path.Combine()
+                return Path.GetFullPath(Path.Combine(AssemblyDirectory, @"..\.."));
             }
         }
     }

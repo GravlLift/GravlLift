@@ -11,13 +11,10 @@ namespace FantasyFootball.Data
     {
         public static List<T> LoadObjects<T>(string relativeCsvPath)
         {
-            if (relativeCsvPath[0] != '\\')
-                relativeCsvPath = "\\" + relativeCsvPath;
-            relativeCsvPath = @"..\.." + relativeCsvPath;
 
             Type type = typeof(T);
             List<T> objects = new List<T>();
-            using (var reader = new StreamReader(Path.Combine(Utilities.Files.AssemblyDirectory, relativeCsvPath)))
+            using (var reader = new StreamReader(Path.Combine(Utilities.Files.ProjectDirectory, relativeCsvPath)))
             {
                 string[] propertyNames = reader.ReadLine().Split(',');
 

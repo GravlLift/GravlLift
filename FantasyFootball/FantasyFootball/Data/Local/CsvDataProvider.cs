@@ -12,11 +12,11 @@ namespace FantasyFootball.Data
 
         Schedule IFantasyDataProvider.GetSchedule()
         {
-            List<Data.Team> teams = Data.CsvObjectLoader.LoadObjects<Data.Team>(@"\Data\Team.csv");
+            List<Data.Team> teams = Data.CsvObjectLoader.LoadObjects<Data.Team>(@"Data\Team.csv");
             Teams = teams.Select(t => new FantasyFootball.Team(t.Name)).ToList();
 
-            List<Data.Matchup> matchups = Data.CsvObjectLoader.LoadObjects<Data.Matchup>(@"\Data\Matchup.csv");
-            List<Data.ScoreInformation> scoreInfo = Data.CsvObjectLoader.LoadObjects<Data.ScoreInformation>(@"\Data\ScoreInformation.csv");
+            List<Data.Matchup> matchups = Data.CsvObjectLoader.LoadObjects<Data.Matchup>(@"Data\Matchup.csv");
+            List<Data.ScoreInformation> scoreInfo = Data.CsvObjectLoader.LoadObjects<Data.ScoreInformation>(@"Data\ScoreInformation.csv");
 
             Schedule schedule = new Schedule
             {
