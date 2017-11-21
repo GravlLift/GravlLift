@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2009
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasyFootball", "FantasyFootball\FantasyFootball.csproj", "{294A6E71-36AF-44C7-B138-6B662C5F41ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities", "..\Utilities\Utilities.csproj", "{F83FEBFB-2EBD-4D12-881A-633FBEEAE1A9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{294A6E71-36AF-44C7-B138-6B662C5F41ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{294A6E71-36AF-44C7-B138-6B662C5F41ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{294A6E71-36AF-44C7-B138-6B662C5F41ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{294A6E71-36AF-44C7-B138-6B662C5F41ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F83FEBFB-2EBD-4D12-881A-633FBEEAE1A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F83FEBFB-2EBD-4D12-881A-633FBEEAE1A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F83FEBFB-2EBD-4D12-881A-633FBEEAE1A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F83FEBFB-2EBD-4D12-881A-633FBEEAE1A9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D211ADA5-62BA-4823-A65D-E53C807ACB24}
+	EndGlobalSection
+EndGlobal
