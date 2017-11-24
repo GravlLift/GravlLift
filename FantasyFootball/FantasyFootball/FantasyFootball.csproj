@@ -90,6 +90,8 @@
     <Compile Include="Data\Local\CsvObjectLoader.cs" />
     <Compile Include="Data\IDataProvider.cs" />
     <Compile Include="Data\Local\Types.cs" />
+    <Compile Include="Data\Yahoo\YahooApi.cs" />
+    <Compile Include="Data\Yahoo\YahooDataProvider.cs" />
     <Compile Include="Matchup\Matchup.cs" />
     <Compile Include="Matchup\MatchupResult.cs" />
     <Compile Include="Matchup\Result.cs" />

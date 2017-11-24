@@ -23,6 +23,8 @@ namespace FantasyFootball
 
         static void Main(string[] args)
         {
+            //Data.Yahoo.YahooApi.GetTokenAsync().Wait();
+
             Schedule = provider.GetSchedule();
 
             // Load result data structure
@@ -33,7 +35,7 @@ namespace FantasyFootball
             }
 
             IEnumerable<double> allScores = Schedule.Weeks.SelectMany(w => w.Matchups).Select(m => m.Team1ScoreInformation).Where(i => i.ActualScore.HasValue).Select(i => i.ActualScore.Value).Concat(Schedule.Weeks.SelectMany(w => w.Matchups).Select(m => m.Team2ScoreInformation).Where(i => i.ActualScore.HasValue).Select(i => i.ActualScore.Value));
-            ActualScores_StandardDeviation = MathJ.StandardDeviation(new List<double> { 1, 2 });
+            ActualScores_StandardDeviation = MathJ.StandardDeviation(allScores);
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
