@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Utilities;
 
 namespace FantasyFootball
 {
@@ -14,10 +15,11 @@ namespace FantasyFootball
 
     class Program
     {
-        const int SIMULATIONS = 3;
+        const int SIMULATIONS = 10000;
 
         static Data.IFantasyDataProvider provider = new Data.CsvDataProvider();
         static Schedule Schedule;
+        static double ActualScores_StandardDeviation;
 
         static void Main(string[] args)
         {
@@ -29,6 +31,9 @@ namespace FantasyFootball
             {
                 SeasonResults.Add(team, new List<SeasonResult>());
             }
+
+            IEnumerable<double> allScores = Schedule.Weeks.SelectMany(w => w.Matchups).Select(m => m.Team1ScoreInformation).Where(i => i.ActualScore.HasValue).Select(i => i.ActualScore.Value).Concat(Schedule.Weeks.SelectMany(w => w.Matchups).Select(m => m.Team2ScoreInformation).Where(i => i.ActualScore.HasValue).Select(i => i.ActualScore.Value));
+            ActualScores_StandardDeviation = MathJ.StandardDeviation(new List<double> { 1, 2 });
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -45,8 +50,12 @@ namespace FantasyFootball
             // Simulate seasons
             for (int i = 0; i < SIMULATIONS; i++)
             {
+                if((i + 1) % 1000 == 0)
+                {
+                    Console.WriteLine($"Simulating season {i + 1}...");
+                }
+
                 StringBuilder resultsStringBuilder = new StringBuilder($"{i + 1},");
-                //Console.WriteLine($"Simulating season {i + 1}...");
                 foreach (var team in Schedule.Teams)
                 {
                     SeasonResults[team].Add(new SeasonResult(team));
@@ -100,12 +109,14 @@ namespace FantasyFootball
                     rankedLastSeasonResults.OrderBy(r => r.Placement);
                 }
 
-                foreach(var result in rankedLastSeasonResults)
+                foreach (var result in rankedLastSeasonResults)
                 {
                     resultsStringBuilder.Append($"{result.Team} - {result.RecordString} - {result.PointsFor},");
                 }
                 allResults.Add(resultsStringBuilder.ToString());
             }
+
+            Console.WriteLine($"Simulations complete. Generating output csv...");
 
             Dictionary<Team, double> playoffOdds = new Dictionary<Team, double>();
             List<string> summary = new List<string>();
@@ -132,19 +143,18 @@ namespace FantasyFootball
                 sb.Append("," + playoffOdds.Last().Value.ToString("P"));
                 summary.Add(sb.ToString());
             }
-            stopwatch.Stop();
-            Console.WriteLine(stopwatch.Elapsed);
 
             File.WriteAllLines(Path.Combine(Utilities.Files.ProjectDirectory, @"Data\Summary.csv"), summary.ToArray());
             File.WriteAllLines(Path.Combine(Utilities.Files.ProjectDirectory, @"Data\Results.csv"), allResults.ToArray());
 
-
-            Console.ReadKey();
+            stopwatch.Stop();
+            Console.WriteLine($"Completed in {stopwatch.Elapsed}");
         }
 
         public static Result GetMatchupResult(MatchupTeamInfo team1Showing, MatchupTeamInfo team2Showing)
         {
-            return new Result(team1Showing.Team, team1Showing.GetScore(), team2Showing.Team, team2Showing.GetScore());
+
+            return new Result(team1Showing.Team, team1Showing.GetScore(ActualScores_StandardDeviation), team2Showing.Team, team2Showing.GetScore(ActualScores_StandardDeviation));
         }
 
     }

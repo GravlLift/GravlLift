@@ -6,7 +6,6 @@ namespace FantasyFootball
     public class MatchupTeamInfo
     {
         static Random rnd = new Random();
-        static double STD_DEVIATION = 23.58967325;
 
         public Team Team;
         public double? ProjectedScore;
@@ -19,7 +18,7 @@ namespace FantasyFootball
             ProjectedScore = projectedScore;
         }
 
-        public double GetScore()
+        public double GetScore(double standardDeviation)
         {
             if (ActualScore.HasValue)
                 return ActualScore.Value;
@@ -27,7 +26,7 @@ namespace FantasyFootball
             if (!ProjectedScore.HasValue)
                 throw new Exception("No defined score data");
 
-            NormalDistribution distribution = new NormalDistribution(ProjectedScore.Value, STD_DEVIATION);
+            NormalDistribution distribution = new NormalDistribution(ProjectedScore.Value, standardDeviation);
             return Math.Round(distribution.GetRandomValue(rnd),2);
         }
 

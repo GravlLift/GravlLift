@@ -73,5 +73,15 @@ namespace Utilities
         {
             return Enumerable.Min(vals);
         }
+
+        public static double StandardDeviation(IEnumerable<double> values)
+        {
+            if (values.Count() < 2)
+                throw new Exception("Standard deviation calculation requires at least 2 values.");
+
+            double average = values.Average();
+            double sumOfSquaresOfDifferences = values.Sum(val => Math.Pow(val - average, 2));
+            return Math.Sqrt(sumOfSquaresOfDifferences / (values.Count() - 1));
+        }
     }
 }
