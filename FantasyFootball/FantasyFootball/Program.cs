@@ -1,9 +1,12 @@
-﻿using Meta.Numerics.Statistics.Distributions;
+﻿using FantasyFootball.Data;
+using FantasyFootball.Data.Yahoo;
+using Meta.Numerics.Statistics.Distributions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
 using Utilities;
@@ -17,13 +20,14 @@ namespace FantasyFootball
     {
         const int SIMULATIONS = 10000;
 
-        static Data.IFantasyDataProvider provider = new Data.CsvDataProvider();
+        //static IFantasyDataProvider provider = new CsvDataProvider();
+        static IFantasyDataProvider provider = new YahooDataProvider();
         static Schedule Schedule;
         static double ActualScores_StandardDeviation;
 
         static void Main(string[] args)
         {
-            //Data.Yahoo.YahooApi.GetTokenAsync().Wait();
+            provider.GetTeams();
 
             Schedule = provider.GetSchedule();
 
@@ -146,8 +150,8 @@ namespace FantasyFootball
                 summary.Add(sb.ToString());
             }
 
-            File.WriteAllLines(Path.Combine(Utilities.Files.ProjectDirectory, @"Data\Summary.csv"), summary.ToArray());
-            File.WriteAllLines(Path.Combine(Utilities.Files.ProjectDirectory, @"Data\Results.csv"), allResults.ToArray());
+            File.WriteAllLines(Path.Combine(Files.ProjectDirectory, @"Data\Summary.csv"), summary.ToArray());
+            File.WriteAllLines(Path.Combine(Files.ProjectDirectory, @"Data\Results.csv"), allResults.ToArray());
 
             stopwatch.Stop();
             Console.WriteLine($"Completed in {stopwatch.Elapsed}");
