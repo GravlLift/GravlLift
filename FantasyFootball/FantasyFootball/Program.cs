@@ -18,10 +18,11 @@ namespace FantasyFootball
 
     class Program
     {
-        const int SIMULATIONS = 10000;
+        const int SIMULATIONS = 100000;
+        const bool PRINT_ALL_RESULTS = false;
 
-        //static IFantasyDataProvider provider = new CsvDataProvider();
-        static IFantasyDataProvider provider = new YahooDataProvider();
+        static IFantasyDataProvider provider = new CsvDataProvider();
+        //static IFantasyDataProvider provider = new YahooDataProvider();
         static Schedule Schedule;
         static double ActualScores_StandardDeviation;
 
@@ -45,7 +46,6 @@ namespace FantasyFootball
             stopwatch.Start();
 
             List<string> allResults = new List<string>();
-
             StringBuilder header = new StringBuilder(",");
             for (int i = 1; i <= Schedule.Teams.Count; i++)
             {
@@ -56,7 +56,7 @@ namespace FantasyFootball
             // Simulate seasons
             for (int i = 0; i < SIMULATIONS; i++)
             {
-                if((i + 1) % 1000 == 0)
+                if ((i + 1) % 1000 == 0)
                 {
                     Console.WriteLine($"Simulating season {i + 1}...");
                 }
@@ -124,34 +124,10 @@ namespace FantasyFootball
 
             Console.WriteLine($"Simulations complete. Generating output csv...");
 
-            Dictionary<Team, double> playoffOdds = new Dictionary<Team, double>();
-            List<string> summary = new List<string>();
 
-            header = new StringBuilder(",");
-            for (int i = 0; i <= 13; i++)
-            {
-                header.Append($"({i}-{13 - i}-0),");
-            }
-            summary.Add(header.ToString());
-
-            foreach (var team in Schedule.Teams)
-            {
-                IEnumerable<SeasonResult> teamResults = SeasonResults.Where(r => r.Key == team).SelectMany(r => r.Value);
-                double odds = (double)teamResults.Count(sr => sr.MadePlayoffs.Value) / (double)teamResults.Count();
-                playoffOdds.Add(team, odds);
-
-                StringBuilder sb = new StringBuilder($"{team}");
-
-                for (int i = 0; i <= 13; i++)
-                {
-                    sb.Append("," + ((double)teamResults.Count(sr => sr.Wins == i) / (double)teamResults.Count()).ToString("P"));
-                }
-                sb.Append("," + playoffOdds.Last().Value.ToString("P"));
-                summary.Add(sb.ToString());
-            }
-
-            File.WriteAllLines(Path.Combine(Files.ProjectDirectory, @"Data\Summary.csv"), summary.ToArray());
-            File.WriteAllLines(Path.Combine(Files.ProjectDirectory, @"Data\Results.csv"), allResults.ToArray());
+            File.WriteAllLines(Path.Combine(Files.ProjectDirectory, @"Data\Summary.csv"), GetSeasonRecordsCsvList(SeasonResults).Concat(GetSeasonPlacementCsvList(SeasonResults)).ToArray());
+            if (PRINT_ALL_RESULTS)
+                File.WriteAllLines(Path.Combine(Files.ProjectDirectory, @"Data\Results.csv"), allResults.ToArray());
 
             stopwatch.Stop();
             Console.WriteLine($"Completed in {stopwatch.Elapsed}");
@@ -163,5 +139,70 @@ namespace FantasyFootball
             return new Result(team1Showing.Team, team1Showing.GetScore(ActualScores_StandardDeviation), team2Showing.Team, team2Showing.GetScore(ActualScores_StandardDeviation));
         }
 
+        public static List<string> GetSeasonRecordsCsvList(Dictionary<Team, List<SeasonResult>> seasonResults)
+        {
+            Dictionary<Team, double> playoffOdds = new Dictionary<Team, double>();
+            Dictionary<Team, double> byeOdds = new Dictionary<Team, double>();
+
+            StringBuilder header = new StringBuilder(",");
+            List<string> lines = new List<string>();
+
+            // Write record
+            for (int i = 0; i <= 13; i++)
+            {
+                header.Append($"({i}-{13 - i}-0),");
+            }
+            header.Append($"Playoff Odds,Bye Odds");
+
+            lines.Add(header.ToString());
+
+            foreach (var team in Schedule.Teams)
+            {
+                IEnumerable<SeasonResult> teamResults = seasonResults.Where(r => r.Key == team).SelectMany(r => r.Value);
+
+                double playoffPerc = (double)teamResults.Count(sr => sr.MadePlayoffs.Value) / (double)teamResults.Count();
+                playoffOdds.Add(team, playoffPerc);
+
+                double byePerc = (double)teamResults.Count(sr => sr.MadePlayoffBye.Value) / (double)teamResults.Count();
+                byeOdds.Add(team, byePerc);
+
+                StringBuilder sb = new StringBuilder($"{team}");
+
+                //Write Record
+                for (int i = 0; i <= 13; i++)
+                {
+                    sb.Append("," + ((double)teamResults.Count(sr => sr.Wins == i) / (double)teamResults.Count()).ToString("P"));
+                }
+                sb.Append("," + playoffOdds.Last().Value.ToString("P") + "," + byeOdds.Last().Value.ToString("P"));
+                lines.Add(sb.ToString());
+            }
+
+            return lines;
+        }
+
+        public static List<string> GetSeasonPlacementCsvList(Dictionary<Team, List<SeasonResult>> seasonResults)
+        {
+            List<string> lines = new List<string>
+            {
+                ",1st,2nd,3rd,4th,5th,6th,7th,8th,9th,10th,11th,12th"
+            };
+
+            foreach (var team in Schedule.Teams)
+            {
+                IEnumerable<SeasonResult> teamResults = seasonResults.Where(r => r.Key == team).SelectMany(r => r.Value);
+
+                StringBuilder sb = new StringBuilder($"{team}");
+
+                // Write Placement
+                for (int i = 1; i <= 12; i++)
+                {
+                    sb.Append("," + ((double)teamResults.Count(sr => sr.Placement == i) / (double)teamResults.Count()).ToString("P"));
+                }
+                lines.Add(sb.ToString());
+            }
+
+            return lines;
+
+        }
     }
 }

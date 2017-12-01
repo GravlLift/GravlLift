@@ -7,6 +7,18 @@ namespace FantasyFootball
     {
         public Team Team;
         public int Placement;
+        public bool? MadePlayoffBye
+        {
+            get
+            {
+                if (Placement <= 0)
+                {
+                    return null;
+                }
+
+                return Placement <= 2;
+            }
+        }
         public bool? MadePlayoffs
         {
             get
